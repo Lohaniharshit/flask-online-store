@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add to Cart</title>
+</head>
+<body>
+    <h1>Add to Cart</h1>
+    <p>{{ item.name }} - ${{ item.price }}</p>
+    <form method="POST">
+        <button type="submit">Add to Cart</button>
+    </form>
+    <a href="{{ url_for('shop') }}">Back to Shop</a>
+</body>
+</html>

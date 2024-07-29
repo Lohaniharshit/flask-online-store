@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop</title>
+</head>
+<body>
+    <h1>Shop</h1>
+    <ul>
+        {% for item in items %}
+            <li>
+                <h2>{{ item.name }}</h2>
+                <p>Category: {{ item.category }}</p>
+                <p>Price: ${{ item.price }}</p>
+                
+                <!-- Form to add item to cart -->
+                <form action="{{ url_for('add_to_cart', item_id=item.id) }}" method="POST">
+                    <button type="submit">Add to Cart</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('view_cart') }}">View Cart</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>

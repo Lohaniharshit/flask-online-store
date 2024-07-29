@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Home</title>
+</head>
+<body>
+    <h1>Welcome, {{ g.user.username }}</h1>
+    <a href="{{ url_for('logout') }}">Logout</a>
+    <a href="{{ url_for('shop') }}">Add to Cart</a>
+    <a href="{{ url_for('view_cart') }}">View Cart</a>
+</body>
+</html>

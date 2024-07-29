@@ -1,4 +1,4 @@
-flask
-flask-smorest
-python-dotenv
-marshmallow
+Flask
+Flask-SQLAlchemy
+psycopg2-binary
+Werkzeug

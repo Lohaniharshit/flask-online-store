@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Cart</title>
+</head>
+<body>
+    <h1>Your Cart</h1>
+    <ul>
+        {% for item in items %}
+            <li>{{ item.name }} - ${{ item.price }}
+                <a href="{{ url_for('remove_from_cart', item_id=item.id) }}">Remove</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('shop') }}">Back to Shop</a>
+</body>
+</html>
