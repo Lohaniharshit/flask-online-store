@@ -1,33 +1,14 @@
 from flask import Flask, render_template, request, redirect, url_for, session, g, flash
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from functools import wraps
 import logging
+from models import User, Cart, Item, db
 
 app = Flask(__name__)
 app.secret_key = '466df0ab2c7d8ae4c6697f5926c1f5ca36a598600aad865d'  # Change this to your secret key
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://myusername:mypassword@localhost/mydatabase'
-
-db = SQLAlchemy(app)
+db.init_app(app)
 migrate = Migrate(app, db)
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)
-
-class Item(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    category = db.Column(db.String(50), nullable=False)
-    price = db.Column(db.Float, nullable=False)
-
-class Cart(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    item_id = db.Column(db.Integer, db.ForeignKey('item.id'), nullable=False)
-    quantity = db.Column(db.Integer, default=1)
 
 def login_required(f):
     @wraps(f)
@@ -49,15 +30,11 @@ def home():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if 'user_id' in session:
-        flash('You are already logged in.', 'info')
-        return redirect(url_for('user_home'))
-    
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
         user = User.query.filter_by(username=username).first()
-        if user and check_password_hash(user.password, password):
+        if user and user.password == password:
             session['user_id'] = user.id
             flash('Login successful!', 'success')
             logging.debug(f"User {username} logged in successfully.")
@@ -67,20 +44,15 @@ def login():
         return redirect(url_for('login'))
     return render_template('login.html')
 
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    if 'user_id' in session:
-        flash('You are already signed up and logged in.', 'info')
-        return redirect(url_for('user_home'))
-    
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-        new_user = User(username=username, password=hashed_password)
+        new_user = User(username=username, password=password)
         db.session.add(new_user)
         db.session.commit()
-        flash('Signup successful, please log in.', 'success')
         return redirect(url_for('login'))
     return render_template('signup.html')
 
@@ -151,3 +123,4 @@ if __name__ == '__main__':
             db.session.bulk_save_objects(sample_items)
             db.session.commit()
     app.run(debug=True)
+    
