@@ -1,18 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>View Cart</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}View Cart{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
     <h1>Your Cart</h1>
-    <ul>
+    <ul class="list-group mt-3">
         {% for item in items %}
-            <li>{{ item.name }} - ${{ item.price }}
-                <a href="{{ url_for('remove_from_cart', item_id=item.id) }}">Remove</a>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ item.name }} - ${{ item.price }}
+                <a href="{{ url_for('remove_from_cart', item_id=item.id) }}" class="btn btn-danger btn-sm">Remove</a>
             </li>
         {% endfor %}
     </ul>
-    <a href="{{ url_for('shop') }}">Back to Shop</a>
-</body>
-</html>
+    <div class="mt-3">
+        <a href="{{ url_for('shop') }}" class="btn btn-primary">Back to Shop</a>
+    </div>
+</div>
+{% endblock %}
