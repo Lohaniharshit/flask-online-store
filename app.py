@@ -44,16 +44,25 @@ def login():
         return redirect(url_for('login'))
     return render_template('login.html')
 
-
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+
+        # Check if the username already exists
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            flash('Username already exists. Please log in.', 'warning')
+            return redirect(url_for('login'))
+        
+        # If username does not exist, create a new user
         new_user = User(username=username, password=password)
         db.session.add(new_user)
         db.session.commit()
+        flash('Sign up successful! Please log in.', 'success')
         return redirect(url_for('login'))
+
     return render_template('signup.html')
 
 @app.route('/logout')
@@ -123,4 +132,3 @@ if __name__ == '__main__':
             db.session.bulk_save_objects(sample_items)
             db.session.commit()
     app.run(debug=True)
-    
