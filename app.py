@@ -3,13 +3,18 @@ from flask_migrate import Migrate
 from functools import wraps
 import logging
 from models import User, Cart, Item, db
+ 
+# Initialize the Flask app
+app = Flask(__name__)
+app.secret_key = 'your_secret_key'
 
+# Database configuration
 app = Flask(__name__)
 app.secret_key = '466df0ab2c7d8ae4c6697f5926c1f5ca36a598600aad865d'  # Change this to your secret key
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://myusername:mypassword@localhost/mydatabase'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost/shopping_app12345'
 db.init_app(app)
 migrate = Migrate(app, db)
-
+ 
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -17,17 +22,17 @@ def login_required(f):
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
-
+ 
 @app.before_request
 def before_request():
     g.user = None
     if 'user_id' in session:
         g.user = User.query.filter_by(id=session['user_id']).first()
-
+ 
 @app.route('/')
 def home():
     return redirect(url_for('login'))
-
+ 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -43,13 +48,13 @@ def login():
         logging.debug(f"Invalid login attempt for username {username}.")
         return redirect(url_for('login'))
     return render_template('login.html')
-
+ 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-
+ 
         # Check if the username already exists
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
@@ -62,20 +67,20 @@ def signup():
         db.session.commit()
         flash('Sign up successful! Please log in.', 'success')
         return redirect(url_for('login'))
-
+ 
     return render_template('signup.html')
-
+ 
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
     flash('You have been logged out.', 'info')
     return redirect(url_for('login'))
-
+ 
 @app.route('/user_home')
 @login_required
 def user_home():
     return render_template('user_home.html')
-
+ 
 @app.route('/add_to_cart/<int:item_id>', methods=['POST'])
 @login_required
 def add_to_cart(item_id):
@@ -89,14 +94,14 @@ def add_to_cart(item_id):
         db.session.commit()
         flash('Item added to cart.', 'success')
         return redirect(url_for('shop'))
-
+ 
 @app.route('/view_cart')
 @login_required
 def view_cart():
     cart_items = Cart.query.filter_by(user_id=g.user.id).all()
     items = [{'item': Item.query.get(cart_item.item_id), 'quantity': cart_item.quantity} for cart_item in cart_items]
     return render_template('view_cart.html', items=items)
-
+ 
 @app.route('/remove_from_cart/<int:item_id>')
 @login_required
 def remove_from_cart(item_id):
@@ -109,13 +114,13 @@ def remove_from_cart(item_id):
         db.session.commit()
         flash('Item removed from cart.', 'info')
     return redirect(url_for('view_cart'))
-
+ 
 @app.route('/shop')
 @login_required
 def shop():
     items = Item.query.all()
     return render_template('shop.html', items=items)
-
+ 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
@@ -132,3 +137,4 @@ if __name__ == '__main__':
             db.session.bulk_save_objects(sample_items)
             db.session.commit()
     app.run(debug=True)
+ 

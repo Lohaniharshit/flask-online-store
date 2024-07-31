@@ -1,8 +1,10 @@
 #!/bin/bash
 
 # Define variables
-DB_USER="postgres"
-DB_SCRIPT="create_db_and_tables.sql"
-
+# Set superuser database credentials
+SUPER_USER="postgres"
+SUPER_PASSWORD="123456"
+DB_HOST="localhost"
+SQL_SCRIPT="/home/oem/Documents/flask-online-store/create_db.sql"
 # Run the SQL script
-psql -U $DB_USER -f $DB_SCRIPT
+PGPASSWORD="$SUPER_PASSWORD" psql -h "$DB_HOST" -U "$SUPER_USER" -f "$SQL_SCRIPT"

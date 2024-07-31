@@ -1,30 +1,30 @@
 -- create_db_and_tables.sql
 
 -- Create a new database
-CREATE DATABASE shopping_app123;
+CREATE DATABASE shopping_app12345;
 
 -- Connect to the new database
-\connect shopping_app;
+\connect shopping_app12345;
 
 -- Create the users table
-CREATE TABLE users (
+CREATE TABLE "user" (
     id SERIAL PRIMARY KEY,
     username VARCHAR(80) UNIQUE NOT NULL,
     password VARCHAR(200) NOT NULL
 );
 
--- Create the items table
-CREATE TABLE items (
+CREATE TABLE item (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     category VARCHAR(50) NOT NULL,
     price FLOAT NOT NULL
 );
 
--- Create the cart table
 CREATE TABLE cart (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) NOT NULL,
-    item_id INTEGER REFERENCES items(id) NOT NULL,
-    quantity INTEGER DEFAULT 1
+    user_id INTEGER NOT NULL,
+    item_id INTEGER NOT NULL,
+    quantity INTEGER DEFAULT 1,
+    FOREIGN KEY (user_id) REFERENCES "user" (id),
+    FOREIGN KEY (item_id) REFERENCES item (id)
 );
