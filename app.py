@@ -4,10 +4,6 @@ from functools import wraps
 import logging
 from models import User, Cart, Item, db
  
-# Initialize the Flask app
-app = Flask(__name__)
-app.secret_key = 'your_secret_key'
-
 # Database configuration
 app = Flask(__name__)
 app.secret_key = '466df0ab2c7d8ae4c6697f5926c1f5ca36a598600aad865d'  # Change this to your secret key
