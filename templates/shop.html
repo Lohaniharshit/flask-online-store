@@ -14,7 +14,7 @@
                         <p class="card-text">Category: {{ item.category }}</p>
                         <p class="card-text">Price: ${{ item.price }}</p>
                         <!-- Form to add item to cart -->
-                        <form action="{{ url_for('add_to_cart', item_id=item.id) }}" method="POST">
+                        
                             <button type="submit" class="btn btn-primary">Add to Cart</button>
                         </form>
                     </div>
@@ -22,7 +22,7 @@
             </div>
         {% endfor %}
     </div>
-    <a href="{{ url_for('view_cart') }}" class="btn btn-secondary">View Cart</a>
+   
     <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
 </div>
 {% endblock %}

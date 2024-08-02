@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, g
 from flask_migrate import Migrate
 from functools import wraps
 import logging
-from models import User, Cart, Item, db
+from models import User, Item, db
  
 # Database configuration
 app = Flask(__name__)
@@ -77,40 +77,8 @@ def logout():
 def user_home():
     return render_template('user_home.html')
  
-@app.route('/add_to_cart/<int:item_id>', methods=['POST'])
-@login_required
-def add_to_cart(item_id):
-    if request.method == 'POST':
-        cart_item = Cart.query.filter_by(user_id=g.user.id, item_id=item_id).first()
-        if cart_item:
-            cart_item.quantity += 1
-        else:
-            cart_item = Cart(user_id=g.user.id, item_id=item_id)
-            db.session.add(cart_item)
-        db.session.commit()
-        flash('Item added to cart.', 'success')
-        return redirect(url_for('shop'))
- 
-@app.route('/view_cart')
-@login_required
-def view_cart():
-    cart_items = Cart.query.filter_by(user_id=g.user.id).all()
-    items = [{'item': Item.query.get(cart_item.item_id), 'quantity': cart_item.quantity} for cart_item in cart_items]
-    return render_template('view_cart.html', items=items)
- 
-@app.route('/remove_from_cart/<int:item_id>')
-@login_required
-def remove_from_cart(item_id):
-    cart_item = Cart.query.filter_by(user_id=g.user.id, item_id=item_id).first()
-    if cart_item:
-        if cart_item.quantity > 1:
-            cart_item.quantity -= 1
-        else:
-            db.session.delete(cart_item)
-        db.session.commit()
-        flash('Item removed from cart.', 'info')
-    return redirect(url_for('view_cart'))
- 
+
+
 @app.route('/shop')
 @login_required
 def shop():
