@@ -6,18 +6,11 @@ from models import User, Item, db
  
 # Database configuration
 app = Flask(__name__)
-app.secret_key = '466df0ab2c7d8ae4c6697f5926c1f5ca36a598600aad865d'  # Change this to your secret key
+app.secret_key = '466df0ab2c7d8ae4c6697f5926c1f5ca36a598600aad865d' 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost/shopping_app12345'
 db.init_app(app)
 migrate = Migrate(app, db)
- 
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
+
  
 @app.before_request
 def before_request():
@@ -73,14 +66,12 @@ def logout():
     return redirect(url_for('login'))
  
 @app.route('/user_home')
-@login_required
 def user_home():
     return render_template('user_home.html')
  
 
 
 @app.route('/shop')
-@login_required
 def shop():
     items = Item.query.all()
     return render_template('shop.html', items=items)
