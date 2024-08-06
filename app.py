@@ -1,13 +1,17 @@
 from flask import Flask, render_template, request, redirect, url_for, session, g, flash
 from flask_migrate import Migrate
-from functools import wraps
 import logging
 from models import User, Item, db
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
  
 # Database configuration
 app = Flask(__name__)
-app.secret_key = '466df0ab2c7d8ae4c6697f5926c1f5ca36a598600aad865d' 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost/shopping_app12345'
+app.secret_key = os.getenv('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+print(os.getenv('SECRET_KEY'),os.getenv('DATABASE_URL'))
 db.init_app(app)
 migrate = Migrate(app, db)
 
@@ -20,7 +24,7 @@ def before_request():
  
 @app.route('/')
 def home():
-    return redirect(url_for('login'))
+    return redirect('login')
  
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -35,7 +39,7 @@ def login():
             return redirect(url_for('user_home'))
         flash('Invalid credentials, please try again.', 'danger')
         logging.debug(f"Invalid login attempt for username {username}.")
-        return redirect(url_for('login'))
+        return redirect('login')
     return render_template('login.html')
  
 @app.route('/signup', methods=['GET', 'POST'])
@@ -44,18 +48,16 @@ def signup():
         username = request.form['username']
         password = request.form['password']
  
-        # Check if the username already exists
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
             flash('Username already exists. Please log in.', 'warning')
-            return redirect(url_for('login'))
+            return redirect('login')
         
-        # If username does not exist, create a new user
         new_user = User(username=username, password=password)
         db.session.add(new_user)
         db.session.commit()
         flash('Sign up successful! Please log in.', 'success')
-        return redirect(url_for('login'))
+        return redirect('login')
  
     return render_template('signup.html')
  
@@ -63,7 +65,7 @@ def signup():
 def logout():
     session.pop('user_id', None)
     flash('You have been logged out.', 'info')
-    return redirect(url_for('login'))
+    return redirect('login')
  
 @app.route('/user_home')
 def user_home():
@@ -79,7 +81,6 @@ def shop():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        # Add some sample items to the database (if not already added)
         if Item.query.count() == 0:
             sample_items = [
                 Item(name='Laptop 1', category='Laptop', price=1000.99),
